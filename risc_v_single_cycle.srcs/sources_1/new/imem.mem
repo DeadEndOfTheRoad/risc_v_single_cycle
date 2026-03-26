@@ -1,0 +1,39 @@
+00500113
+00C00193
+FF718393
+0023E233
+0041F2B3
+004282B3
+02728863
+0041A233
+00020463
+00000293
+0023A233
+005203B3
+402383B3 //  PC = 0x30
+
+
+aaaab2b7  //  lui t0, 0xAAAAB                          PC = 0x34
+aaa28293  //  addi t0, t0, 0xAAA                       PC = 0x38
+/* t0 = 0xAAAAAAAA */
+
+bbbbc337  //  lui t1, 0xBBBBC                          PC = 0x3C
+bbb30313  //  addi t1, t1, 0xBBB                       PC = 0x40
+/* t1 = 0xBBBBBBBB */
+
+ccccd3b7  //  lui t2, 0xCCCCD                          PC = 0x44
+ccc38393  //  addi t2, t2, 0xCCC                       PC = 0x48
+/* t2 = 0xCCCCCCCC */
+
+0451aa23  //  sw t0, 84(x3)    [96] = 0xAAAAAAAA       PC = 0x4C
+04619a23  //  sh t1, 84(x3)    [96] = 0xAAAABBBB       PC = 0x50
+06700023  //  sb t2, 96(x0)    [96] = 0xAAAABBCC       PC = 0x54
+
+
+
+06002103
+005104B3
+008001EF
+00100113
+0021a023  //  sw x2, 0(x3)
+00210063
