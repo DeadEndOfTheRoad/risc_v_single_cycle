@@ -1,4 +1,15 @@
 # RV32I Single-Cycle CPU
+
+## Key Specifications
+
+| Feature | Detail |
+| :--- | :--- |
+| **Architecture** | Harvard (Dedicated Instruction & Data Memory) |
+| **ISA** | RISC-V RV32I (37 Unprivileged Instructions) |
+| **Design Type** | Single-Cycle (CPI = 1.0) |
+| **HDL** | SystemVerilog (IEEE 1800-2012) |
+| **Data Path** | 32-bit (Word-aligned with byte-addressing support) |
+| **Control Signals** | 11-signal Hardware Controller |
  
 A complete implementation of the RISC-V 32-bit base integer instruction set (RV32I) as a single-cycle processor at the register transfer level. All 37 unprivileged instructions are implemented and verified through simulation.
 
@@ -34,7 +45,7 @@ The ALU also implements negative, zero, carry and overflow flag (however they ar
 
 Instruction memory is implemented using ROM which initially reads `risc_v_single_cycle.srcs/sources_1/new/imem.mem` at start of simulation to store instructions.
 
-Data memory is **simulated** by using flip flops to store 32-bit words (5-bit width of address bus). The data is conventially accessed as word-aligned but can be accessed per-byte using `sh/sb` which modifies the 4-bit `memoryWriteEnable` control signal. 
+Data memory is **simulated** by using flip flops to store 32-bit words ( 6-bit width of address bus). The data is conventionally accessed as word-aligned but can be accessed per-byte using `sh/sb` which modifies the 4-bit `memoryWriteEnable` control signal. 
 
 6 N:1 multiplexers are controlled by 6 control signals (`ResultSrc`/`ALUSrc`/`PCSrc`/`PCTargetSrc`/`ImmSrc`/`ReadMask`) to combinationally control dataflow based on operation.
 
@@ -42,18 +53,35 @@ The immediate extender is also a (5:1) multiplexer at heart which is used for un
 
 ---
 
-## Simulation
+## Simulation & Verification
 
-Custom hand written testbenches are used for ALU, controller, and processor with hand written tests in assembly (converted to hex using https://luplab.gitlab.io/rvcodecjs/) which are then written into `imem.mem` before simulation. 
+Verification accounted for approximately 60% of the development cycle, utilizing a bottom-up testing methodology to ensure system stability.
 
-The Vivado Simulation Tool produced waveforms which can be used for debugging and testing (which was also about 50-60% of the time taken in this project)
+### Verification Strategy
+* **Unit Testing:** Independent SystemVerilog testbenches were developed for the ALU, Control Unit, and Immediate Extender to verify combinatorial logic against the RISC-V ISA spec.
+* **System Testing:** The full CPU was verified using hand-written assembly programs. These programs were converted to Hex via [RVCodecJS](https://luplab.gitlab.io/rvcodecjs/) and loaded into `imem.mem`.
+* **Waveform Analysis:** Using the **Vivado Simulation Tool**, signal transitions were monitored across the fetch/execute boundary to verify timing, especially for high-latency instructions like `lw`.
 
-The Vivado RTL Elaboration Tool can be used to produce a gate/module-level diagram (the RTL 
+### Design Visuals
+* **Vivado RTL Elaboration:** Used to generate a complete RTL schematic, providing a gate-level visualization of the synthesized datapath and control logic.
+* **Post-Synthesis Functional Simulation:** Ensured that the behavioral SystemVerilog correctly translated into hardware primitives without logic errors.
 
 ---
 
 ## Tools Used
 
-- Vivado                                                                    -> Elaboration & Simulation
+- Xilinx Vivado 2025.2                                                      -> Elaboration & Simulation
 - [RISC-V Instruction Encoder/Decoder](https://luplab.gitlab.io/rvcodecjs/) -> Conversion from assembly to hex and vice versa
 - SystemVerilog (IEEE 1800-2012)                                            -> HDL
+
+---
+
+## How To Setup
+
+1) Open `risc_v_single_cycle.xpr` in Xilinx Vivado
+2) Navigate to `risc_v_single_cycle.srcs/sources_1/new/imem.mem` and paste hexadecimal representation of assembly instructions to run.
+3) Modify testbench to test for expected output (or skip this step).
+4) Make sure `testbench.sv` is the `top` and in Tcl console, type `launch_simulation` and click Enter.
+5) You can now analyze the waveform produced.
+
+---
