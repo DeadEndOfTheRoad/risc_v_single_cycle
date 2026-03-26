@@ -16,10 +16,10 @@ module main_decoder(input logic  [2:0] funct3,
         7'b0100011: begin
             {controls[16:7], controls[2:0]} = 17'bxxx_001_00_0_0_0_1_x; // S-type
               case (funct3)
-                3'b010: controls[6:3] = 4'b1111;
-                3'b001: controls[6:3] = 4'b0011;
-                3'b000: controls[6:3] = 4'b0001;
-                3'bxxx: controls[6:3] = 4'bxxxx;
+                3'b010: controls[6:3] = 4'b1111;  // sw
+                3'b001: controls[6:3] = 4'b0011;  // sh
+                3'b000: controls[6:3] = 4'b0001;  // sb
+                default: controls[6:3] = 4'bxxxx;
               endcase 
             end
         7'b0110011: controls = 17'b000_xxx_10_0_0_0000_1_0_x; // R-type
